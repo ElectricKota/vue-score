@@ -1,5 +1,4 @@
 <script lang="ts">
-import { ref } from 'vue';
 
 type Player = {
   name: string;
@@ -12,28 +11,46 @@ export default {
   },
   data() {
     return {
-      rounds: 0 as number,
-      mainRounds: 1 as number,
       players: new Array<Player>,
-      playerCount: 2 as number,
-      actualPoints: 0 as number,
+      settings: {
+        rounds: 0 as number,
+        mainRounds: 1 as number,
+        playerCount: 2 as number,
+        actualPoints: 0 as number,
+        closedSettings: false as boolean
+      }
+
     }
   },
   created() {
-    this.createEmptyPlayers()
+    this.loadData();
+
   },
   mounted() {
-
+    if (this.settings.closedSettings) {
+      console.log('kurva!', this.settings.closedSettings);
+      let sdf = document.querySelector(`#nastaveni`)?.classList.add('hide');
+      document.querySelector(`#nastaveni-toggler`)?.classList.add('down');
+    }
   },
   methods: {
     resetgame() {
-      this.rounds = 0;
-      this.mainRounds = 1;
-      this.actualPoints = this.playerCount;
+      this.settings.rounds = 0;
+      this.settings.mainRounds = 1;
+      this.settings.actualPoints = this.settings.playerCount;
       this.players.forEach(element => {
         element.score = 0;
         element.rounds = 0;
       });
+    },
+    changeNuberOfPlayers(increase: boolean) {
+      if (increase) {
+        if (this.settings.playerCount < 8) this.settings.playerCount++;
+      }
+      else {
+        if (this.settings.playerCount > 2) this.settings.playerCount--;
+      }
+      this.createEmptyPlayers();
     },
     newPlayer(name: string, score: number, rounds: number): void {
       const player: Player = {
@@ -45,9 +62,9 @@ export default {
     },
     createEmptyPlayers() {
       this.resetgame();
-      const number = this.playerCount;
-      if (this.players.length > this.playerCount) {
-        this.players.length = this.playerCount
+      const number = this.settings.playerCount;
+      if (this.players.length > this.settings.playerCount) {
+        this.players.length = this.settings.playerCount
       }
       else {
 
@@ -55,7 +72,7 @@ export default {
           this.newPlayer(`Hráč č.${index + 1}`, 0, 0);
         }
       }
-      this.actualPoints = this.playerCount;
+      this.settings.actualPoints = this.settings.playerCount;
       console.log(this.players);
     },
     changeName(index: number) {
@@ -64,29 +81,30 @@ export default {
     },
     assignPoints(index: number) {
       // Metoda pro přiřazení bodů
-      const setScore = this.actualPoints;
+      const setScore = this.settings.actualPoints;
 
       this.players[index].score += setScore;
       this.players[index].rounds++;
       console.log(`Hráči ${this.players[index].name} bylo přiřazeno ${setScore} bodů.`);
 
-      this.actualPoints--;
-      if (this.actualPoints < 1) {
-        this.actualPoints = this.playerCount;
+      this.settings.actualPoints--;
+      if (this.settings.actualPoints < 1) {
+        this.settings.actualPoints = this.settings.playerCount;
       }
       this.newRound();
     },
     newRound() {
       let newRound = 0;
       this.players.forEach(element => {
-        if (element.rounds === this.mainRounds) newRound++;
+        if (element.rounds === this.settings.mainRounds) newRound++;
       });
-      console.log('porovnávám ++ a mainRound a playerCount', newRound, this.mainRounds, this.playerCount);
+      console.log('porovnávám ++ a mainRound a playerCount', newRound, this.settings.mainRounds, this.settings.playerCount);
 
-      if (newRound === this.playerCount) {
-        this.rounds = this.playerCount;
-        this.mainRounds++;
-        console.log('Nové kolo!', this.rounds, this.mainRounds);
+      if (newRound === this.settings.playerCount) {
+        this.settings.rounds = this.settings.playerCount;
+        this.settings.mainRounds++;
+        console.log('Nové kolo!', this.settings.rounds, this.settings.mainRounds);
+        this.saveData();
       }
       console.log(this.players);
     },
@@ -98,8 +116,49 @@ export default {
       return sorted;
     },
     toggleHide(id: string) {
+      this.settings.closedSettings = !this.settings.closedSettings;
       document.querySelector(`#${id}`)?.classList.toggle('hide');
       document.querySelector(`#${id}-toggler`)?.classList.toggle('down');
+    },
+    saveData() {
+      localStorage.setItem('PLAYERS', JSON.stringify(this.players));
+      localStorage.setItem('SETTINGS', JSON.stringify(this.settings));
+      console.log('ukládám data');
+    },
+    loadData() {
+      let playersLoaded = null;
+      let settingsLoaded = null;
+      const playersJSON = localStorage.getItem("PLAYERS");
+      const settingsJSON = localStorage.getItem("SETTINGS");
+      if (playersJSON === null || settingsJSON === null) {
+        console.log('Data nenačtena');
+
+      }
+      else {
+        try {
+          playersLoaded = JSON.parse(playersJSON);
+        } catch (err: any) {
+          playersLoaded = null;
+          console.error('chyba při parsování JSONU players');
+        }
+        try {
+          settingsLoaded = JSON.parse(settingsJSON);
+        } catch (err: any) {
+          settingsLoaded = null;
+          console.error('chyba při parsování JSONU settings');
+        }
+      }
+      if (settingsLoaded === null || playersLoaded === null) {
+        console.log('Vytvářím empty players');
+        this.createEmptyPlayers()
+        return;
+      }
+      console.log('Data načtena, kopíruji data z úložiště');
+      this.players = playersLoaded;
+      this.settings = settingsLoaded;
+      console.log('loaded Players', playersLoaded);
+      console.log('loaded Settings', settingsLoaded);
+
     }
 
   }
@@ -147,7 +206,7 @@ export default {
       <section class="sidebar">
         <div class="sidebar__header">
           <h1>Nastavení</h1>
-          <button class="toggler" id="nastaveni-toggler" @click="toggleHide('nastaveni')">X</button>
+          <span class="toggler" id="nastaveni-toggler" @click="toggleHide('nastaveni')" title="Zavřít nastavení"></span>
         </div>
         <div class="hide-section" id="nastaveni">
           <div class="hide-section__inner">
@@ -157,7 +216,7 @@ export default {
             <div class="sidebar__inner">
 
               <h2>Hráči</h2>
-              <label>Počet hráčů: <input type="number" min="2" max="6" @change="createEmptyPlayers()" v-model="playerCount"></label>
+              <label>Počet hráčů: <span class="spinner"><span @click="changeNuberOfPlayers(false)" class="spinner__item spinner__item--minus">-</span><input type="number" min="2" max="8" pattern="\d*" @change="createEmptyPlayers()" v-model="settings.playerCount"><span @click="changeNuberOfPlayers(true)" class="spinner__item spinner__item--plus">+</span></span></label>
               <section class="players">
                 <div v-for="(player, index) in players" :key="index" class="players__item">
                   <label :for="'playerInput_' + index">Hráč č.{{ index + 1 }} | Bodů: {{ player.score }} | Kol: {{ player.rounds }}</label>
@@ -170,13 +229,13 @@ export default {
       </section>
       <section class="sidebar">
         <h1>Příkazy</h1>
-        <p>Hrajeme kolo č. {{ mainRounds }}</p>
-        <p>{{ actualPoints }} body udělíme hráči</p>
+        <p>Hrajeme kolo <strong>č. {{ settings.mainRounds }}</strong></p>
+        <p><strong>{{ settings.actualPoints }}</strong> body udělíme hráči</p>
         <section class="players">
           <template v-for="(player, index) in players" :key="index">
-            <div class="players__item players__item--points" v-if="players[index].rounds !== mainRounds">
-              <label :for="'playerInput_' + index">{{ player.name }}</label>
-              <button @click="assignPoints(index)">Přiřadit body</button>
+            <div class="players__item players__item--points" v-if="players[index].rounds !== settings.mainRounds">
+              <label>{{ player.name }}</label>
+              <div class="button" @click="assignPoints(index)">Přiřadit body</div>
             </div>
           </template>
         </section>
@@ -185,6 +244,3 @@ export default {
 
   </div>
 </template>
-
-<!-- <style scoped lang="scss" src="./assets/scss/main.scss"></style> -->
-./ts/CZ/messages./assets/ts/LangService

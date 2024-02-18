@@ -139,8 +139,62 @@ body {
   }
 }
 
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px 20px;
+  cursor: pointer;
+  background-color: #1E1E1E;
+  color: white;
+
+}
+
 input {
   padding: 6px 9px;
+}
+
+.spinner {
+  display: inline-flex;
+  align-items: center;
+
+  &>input {
+    padding: 6px 15px;
+    border: solid 1px rgb(118, 118, 118);
+    background-color: #1E1E1E;
+    outline: none;
+    text-align: center;
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    -moz-appearance: textfield;
+  }
+
+  &__item {
+    display: block;
+    background-color: #1E1E1E;
+    padding: 6px 15px;
+    border: solid 1px rgb(118, 118, 118);
+    cursor: pointer;
+    transition: background-color .2s;
+
+    &:hover {
+      background-color: rgb(118, 118, 118);
+      ;
+    }
+
+    &--minus {
+      border-width: 1px 0 1px 1px;
+    }
+
+    &--plus {
+      border-width: 1px 1px 1px 0;
+    }
+  }
 }
 
 .players {
@@ -173,13 +227,20 @@ input {
       border: solid 1px gray;
       align-items: center;
       gap: 0;
+      width: 100%;
 
-      &>button {
-        padding: 15px 33px;
-        cursor: pointer;
+      &>.button {
+        width: 100%;
+        text-align: center;
       }
 
+      @include mq($from:mobile-big) {
+        width: auto;
+      }
+
+
       &>label {
+        font-weight: 700;
         padding: 8px 15px;
         text-align: center;
       }
