@@ -1,0 +1,21 @@
+@mixin mask-image($target: 'path to file',
+    $color: #000,
+    $size: contain,
+    $repeat: no-repeat,
+    $transition: true,
+    $transition-duration: .3s,
+    $transition-timing: ease,
+    $transition-delay: 0s,
+) {
+    background-color: $color;
+    -webkit-mask-image: url($target);
+    -webkit-mask-repeat: $repeat;
+    -webkit-mask-size: $size;
+    mask-image: url($target);
+    mask-repeat: $repeat;
+    mask-size: $size;
+
+    @if ($transition) {
+        transition: background-color $transition-duration $transition-delay $transition-timing;
+    }
+}

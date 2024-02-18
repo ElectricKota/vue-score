@@ -1,0 +1,18 @@
+@mixin line-clamp($line-height: 16px,
+  $lines: 2,
+  $max-height: false) {
+
+  display: -webkit-box;
+  line-height: $line-height;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+
+  @if $max-height==true {
+    max-height: calc($line-height * $lines);
+  }
+}
+
+///
+/// @author Michal Kotek
+/// @access private
