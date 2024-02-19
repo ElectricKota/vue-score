@@ -32,8 +32,11 @@ export default {
   },
   mounted() {
     this.loadConstants();
+    if (this.settings.lang === 'cz') {
+      document.querySelector('.lang-switch')?.classList.toggle('switched');
+    }
     if (this.settings.closedSettings) {
-      let sdf = document.querySelector(`#nastaveni`)?.classList.add('hide');
+      document.querySelector(`#nastaveni`)?.classList.add('hide');
       document.querySelector(`#nastaveni-toggler`)?.classList.add('down');
     }
   },
