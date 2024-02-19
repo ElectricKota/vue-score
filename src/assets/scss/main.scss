@@ -22,6 +22,12 @@ body {
 }
 
 .header {
+  display: flex;
+  flex-direction: row-reverse;
+  width: 100%;
+  justify-content: space-around;
+  align-items: flex-start;
+
   &__inner {
     display: flex;
     flex-direction: column;
@@ -94,6 +100,7 @@ body {
       background-color: rgb(59, 59, 59);
     }
 
+
   }
 
   &__item {
@@ -107,12 +114,14 @@ body {
       font-size: 17px;
       color: hsl(210, 14%, 73%);
       font-weight: 700;
+      transition: color .3s ease-in;
 
     }
 
     &--name {
       font-size: 17px;
       color: hsl(210, 14%, 73%);
+      transition: color .3s ease-in;
 
     }
   }
@@ -136,6 +145,32 @@ body {
     .score-list__item--name {
       color: white;
     }
+
+    .score-list__line {
+      &:nth-of-type(2) {
+
+        .score-list__item--score,
+        .score-list__item--name {
+          color: gold;
+        }
+      }
+
+      &:nth-of-type(3) {
+
+        .score-list__item--score,
+        .score-list__item--name {
+          color: silver;
+        }
+      }
+
+      &:nth-of-type(4) {
+
+        .score-list__item--score,
+        .score-list__item--name {
+          color: #CD7F32;
+        }
+      }
+    }
   }
 }
 
@@ -147,7 +182,12 @@ body {
   cursor: pointer;
   background-color: #1E1E1E;
   color: white;
+  transition: background-color .2s ease-in;
 
+  &:hover {
+    background-color: #4e4e4e;
+
+  }
 }
 
 input {

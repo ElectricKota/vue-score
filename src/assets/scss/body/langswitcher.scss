@@ -1,12 +1,12 @@
 .lang-switch {
-    position: absolute;
+    position: relative;
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 5px;
 
-    right: 0;
-    top: 30px;
+
+
     padding: 4px 12px;
 
     border-radius: 40px;
@@ -16,6 +16,12 @@
     height: 53px;
     transition: border-color .6s ease-out;
     user-select: none;
+
+    @include mq($from:tablet) {
+        position: absolute;
+        right: 0;
+        top: 30px;
+    }
 
     &__toggler {
         position: absolute;
@@ -35,10 +41,10 @@
         display: block;
         color: var(--Text-lang-disabled, #616161);
         text-align: center;
-        font-size: 2rem;
+        font-size: 20px;
         font-style: normal;
         font-weight: 700;
-        line-height: 2.6rem;
+        line-height: 26px;
         /* 130% */
         letter-spacing: -0.16rem;
         text-transform: uppercase;

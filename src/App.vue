@@ -1,4 +1,6 @@
 <script lang="ts">
+import LangService from './services/LangService'
+import { MessageConstants } from './services/CZ/messages'
 
 type Player = {
   name: string;
@@ -11,13 +13,15 @@ export default {
   },
   data() {
     return {
+      translate: {} as MessageConstants,
       players: new Array<Player>,
       settings: {
         rounds: 0 as number,
         mainRounds: 1 as number,
         playerCount: 2 as number,
         actualPoints: 0 as number,
-        closedSettings: false as boolean
+        closedSettings: false as boolean,
+        lang: 'cz' as string,
       }
 
     }
@@ -27,13 +31,28 @@ export default {
 
   },
   mounted() {
+    this.loadConstants();
     if (this.settings.closedSettings) {
-      console.log('kurva!', this.settings.closedSettings);
       let sdf = document.querySelector(`#nastaveni`)?.classList.add('hide');
       document.querySelector(`#nastaveni-toggler`)?.classList.add('down');
     }
   },
   methods: {
+    toggleLang() {
+      if (this.settings.lang === 'cz' || this.settings.lang === 'CZ') this.settings.lang = 'en';
+      else this.settings.lang = 'cz';
+      this.saveData(); //uloží se nová hosnota jazyka do settings
+
+    },
+    changeLanguage() {
+      this.toggleLang();
+      document.querySelector('.lang-switch')?.classList.toggle('switched');
+      this.loadConstants();
+    },
+    loadConstants() {
+      this.translate = LangService.getConstantsByLanguage(this.settings.lang);
+
+    },
     resetgame() {
       this.settings.rounds = 0;
       this.settings.mainRounds = 1;
@@ -62,6 +81,13 @@ export default {
     },
     createEmptyPlayers() {
       this.resetgame();
+      if (this.settings.playerCount > 8) {
+        this.settings.playerCount = 8
+      }
+      if (this.settings.playerCount < 2) {
+        this.settings.playerCount = 2
+      }// ochrana aby nebyl počet hgráčů mimo rozsah 2 - 8
+
       const number = this.settings.playerCount;
       if (this.players.length > this.settings.playerCount) {
         this.players.length = this.settings.playerCount
@@ -73,7 +99,7 @@ export default {
         }
       }
       this.settings.actualPoints = this.settings.playerCount;
-      console.log(this.players);
+      // console.log(this.players);
     },
     changeName(index: number) {
       // this.players[index].name = 'sdfsdf';
@@ -85,7 +111,7 @@ export default {
 
       this.players[index].score += setScore;
       this.players[index].rounds++;
-      console.log(`Hráči ${this.players[index].name} bylo přiřazeno ${setScore} bodů.`);
+      // console.log(`Hráči ${this.players[index].name} bylo přiřazeno ${setScore} bodů.`);
 
       this.settings.actualPoints--;
       if (this.settings.actualPoints < 1) {
@@ -98,21 +124,21 @@ export default {
       this.players.forEach(element => {
         if (element.rounds === this.settings.mainRounds) newRound++;
       });
-      console.log('porovnávám ++ a mainRound a playerCount', newRound, this.settings.mainRounds, this.settings.playerCount);
+      // console.log('porovnávám ++ a mainRound a playerCount', newRound, this.settings.mainRounds, this.settings.playerCount);
 
       if (newRound === this.settings.playerCount) {
         this.settings.rounds = this.settings.playerCount;
         this.settings.mainRounds++;
-        console.log('Nové kolo!', this.settings.rounds, this.settings.mainRounds);
+        // console.log('Nové kolo!', this.settings.rounds, this.settings.mainRounds);
         this.saveData();
       }
-      console.log(this.players);
+      // console.log(this.players);
     },
     updateScore(): Array<Player> {
       const sorted: Array<Player> = this.players.slice();
       sorted.sort((a, b) => b.score - a.score);
-      console.log('původní pole:', this.players);
-      console.log('seřazené pole:', sorted);
+      // console.log('původní pole:', this.players);
+      // console.log('seřazené pole:', sorted);
       return sorted;
     },
     toggleHide(id: string) {
@@ -169,57 +195,58 @@ export default {
   <div class="main">
 
     <header class="header">
+      <div class="lang-switch switched" @click="changeLanguage">
+        <div class="lang-switch__toggler"> </div>
+        <span class="lang-switch__lang">
+          CZ
+        </span>
+
+        <span class="lang-switch__lang">EN
+        </span>
+      </div>
       <div class="header__inner">
         <h1>Score</h1>
         <p>by <a href="www.michalkotek.tech">MichalKotek.tech</a></p>
-        <!-- <div class="lang-switch">
-          <div class="lang-switch__toggler"> </div>
-          <span class="lang-switch__lang">
-            CZ
-          </span>
 
-          <span class="lang-switch__lang">EN
-          </span>
-        </div> -->
 
       </div>
     </header>
     <main class="container">
       <section class="sidebar ">
-        <h1>Průběžné pořadí hry</h1>
+        <h1>{{ translate.HEADING_ORDER }}</h1>
         <!-- <button @click="updateScore()">Update</button> -->
         <main class="score-list">
           <div class="score-list__line">
-            <th class="score-list__head">#</th>
-            <th class="score-list__head">Jméno</th>
-            <th class="score-list__head">Score</th>
+            <th class="score-list__head">{{ translate.TABLE_ORDER }}</th>
+            <th class="score-list__head">{{ translate.TABLE_NAME }}</th>
+            <th class="score-list__head">{{ translate.TABLE_SCORE }}</th>
           </div>
           <template v-for="(score, index) in updateScore()" :key="index">
-            <div class="score-list__line">
-              <th class="score-list__item">{{ index + 1 }}.</th>
-              <th class="score-list__item--name">{{ score.name }}</th>
-              <th class="score-list__item--score">{{ score.score }}</th>
+            <div class="score-list__line score-list__line--winners">
+              <td class="score-list__item">{{ index + 1 }}.</td>
+              <td class="score-list__item--name">{{ score.name }}</td>
+              <td class="score-list__item--score">{{ score.score }}</td>
             </div>
           </template>
         </main>
       </section>
       <section class="sidebar">
         <div class="sidebar__header">
-          <h1>Nastavení</h1>
+          <h1>{{ translate.HEADING_SETTINGS }}</h1>
           <span class="toggler" id="nastaveni-toggler" @click="toggleHide('nastaveni')" title="Zavřít nastavení"></span>
         </div>
         <div class="hide-section" id="nastaveni">
           <div class="hide-section__inner">
             <div class="sidebar__inner">
-              <button @click="resetgame()">Reset</button>
+              <span class="button" @click="resetgame()">{{ translate.SETTINGS_RESET }}</span>
             </div>
             <div class="sidebar__inner">
 
-              <h2>Hráči</h2>
-              <label>Počet hráčů: <span class="spinner"><span @click="changeNuberOfPlayers(false)" class="spinner__item spinner__item--minus">-</span><input type="number" min="2" max="8" pattern="\d*" @change="createEmptyPlayers()" v-model="settings.playerCount"><span @click="changeNuberOfPlayers(true)" class="spinner__item spinner__item--plus">+</span></span></label>
+              <h2>{{ translate.HEADING_SETTINGS_PLAYERS }}</h2>
+              <label>{{ translate.SETTINGS_PLAYER_NO }}: <span class="spinner"><span @click="changeNuberOfPlayers(false)" class="spinner__item spinner__item--minus">-</span><input type="number" min="2" max="8" pattern="\d*" @change="createEmptyPlayers()" v-model="settings.playerCount"><span @click="changeNuberOfPlayers(true)" class="spinner__item spinner__item--plus">+</span></span></label>
               <section class="players">
                 <div v-for="(player, index) in players" :key="index" class="players__item">
-                  <label :for="'playerInput_' + index">Hráč č.{{ index + 1 }} | Bodů: {{ player.score }} | Kol: {{ player.rounds }}</label>
+                  <label :for="'playerInput_' + index">{{ translate.PLAYER_NO }}{{ index + 1 }} | {{ translate.SETTINGS_POINTS }}: {{ player.score }} | {{ translate.SETTINGS_ROUNDS }}: {{ player.rounds }}</label>
                   <input :id="'playerInput_' + index" type="text" v-model="player.name" @input="changeName(index)" />
                 </div>
               </section>
@@ -228,14 +255,14 @@ export default {
         </div>
       </section>
       <section class="sidebar">
-        <h1>Příkazy</h1>
-        <p>Hrajeme kolo <strong>č. {{ settings.mainRounds }}</strong></p>
-        <p><strong>{{ settings.actualPoints }}</strong> body udělíme hráči</p>
+        <h1>{{ translate.HEADING_POINTS }}</h1>
+        <p>{{ translate.POINTS_ROUND }} <strong style="font-size:17px">{{ translate.POINTS_ROUND_NO }} {{ settings.mainRounds }}</strong></p>
+        <p><strong style="font-size:19px">{{ settings.actualPoints }}</strong> {{ translate.POINTS_ASSIGN_POINTS }}</p>
         <section class="players">
           <template v-for="(player, index) in players" :key="index">
             <div class="players__item players__item--points" v-if="players[index].rounds !== settings.mainRounds">
               <label>{{ player.name }}</label>
-              <div class="button" @click="assignPoints(index)">Přiřadit body</div>
+              <div class="button" @click="assignPoints(index)">{{ translate.POINTS_ASSIGN_BUTTON }}</div>
             </div>
           </template>
         </section>
