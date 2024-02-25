@@ -1,6 +1,7 @@
 <script lang="ts">
 import LangService from './services/LangService'
 import { MessageConstants } from './services/CZ/messages'
+import { ref } from 'vue';
 
 type Player = {
   name: string;
@@ -49,6 +50,18 @@ export default {
     this.startTimer();
   },
   methods: {
+    hidePlaceholderButton(event: Event) {
+      // Access the button reference
+      const target = event.target as HTMLElement;
+      if (target) target.classList.toggle('hide');
+      // Call your method with the item and event
+      // You can also use buttonElement.value to access the actual DOM element
+      // and perform operations like buttonElement.value.innerHTML = 'New Content';
+      // console.log('Item:', item);
+      setTimeout(() => {
+        target.classList.toggle('hide');
+      }, 1500)
+    },
     startTimer(): void {
       if (this.timerId) {
         clearTimeout(this.timerId);
@@ -262,7 +275,7 @@ export default {
       <div class="header__inner">
         <h1>Score</h1>
         <p>by <a href="www.michalkotek.tech">MichalKotek.tech</a></p>
-        <p>{{ getFormattedTime(elapsedTime) }}</p>
+        <p class="time-stamp">{{ getFormattedTime(elapsedTime) }}</p>
 
       </div>
     </header>
@@ -295,8 +308,7 @@ export default {
           <template v-for="(player, index) in players" :key="index">
             <div class="players__item players__item--points points" v-if="players[index].rounds !== settings.mainRounds">
               <span class="points__name">{{ player.name }}</span>
-              <!-- <span class="points__text ">{{ translate.POINTS_ASSIGN_BUTTON }}: </span> -->
-              <span class="points__fake">+{{ settings.actualPoints }}</span>
+              <span class="points__fake" @click="hidePlaceholderButton($event)">+{{ settings.actualPoints }}</span>
 
               <div class=" points__send" @click="assignPoints(index)">{{ translate.POINTS_ASSIGN_CONFIRM }}</div>
             </div>
