@@ -19,6 +19,6 @@ export class MessageConstants {
     public POINTS_ROUND: string = `Let's Play a Round`;
     public POINTS_ROUND_NO: string = 'No.';
     public POINTS_ASSIGN_POINTS: string = ` points for awarding one of these:`;
-    public POINTS_ASSIGN_BUTTON: string = 'Assign Points';
-
+    public POINTS_ASSIGN_BUTTON: string = 'Assign';
+    public POINTS_ASSIGN_CONFIRM: string = 'Sure?';
 }

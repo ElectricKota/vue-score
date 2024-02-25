@@ -7,6 +7,11 @@ type Player = {
   score: number;
   rounds: number;
 };
+type Time = {
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
 export default {
   components: {
 
@@ -14,6 +19,8 @@ export default {
   data() {
     return {
       translate: {} as MessageConstants,
+      timerId: 0 as number | undefined,
+      elapsedTime: { hours: 0, minutes: 0, seconds: 0 } as Time,
       players: new Array<Player>,
       settings: {
         rounds: 0 as number,
@@ -39,8 +46,50 @@ export default {
       document.querySelector(`#nastaveni`)?.classList.add('hide');
       document.querySelector(`#nastaveni-toggler`)?.classList.add('down');
     }
+    this.startTimer();
   },
   methods: {
+    startTimer(): void {
+      if (this.timerId) {
+        clearTimeout(this.timerId);
+      }
+
+      this.timerId = setTimeout(() => {
+        // Zvýšení uběhlého času
+        this.elapsedTime.seconds++;
+
+        // Přesunutí do minut
+        if (this.elapsedTime.seconds === 60) {
+          this.elapsedTime.seconds = 0;
+          this.elapsedTime.minutes++;
+        }
+
+        // Přesunutí do hodin
+        if (this.elapsedTime.minutes === 60) {
+          this.elapsedTime.minutes = 0;
+          this.elapsedTime.hours++;
+        }
+
+        // Rekurzivní spuštění timeru
+        this.startTimer();
+      }, 1000); // Aktualizace každou vteřinu
+    },
+    // Funkce pro pozastavení timeru
+    pauseTimer(): void {
+      if (this.timerId) {
+        clearTimeout(this.timerId);
+        this.timerId = undefined;
+      }
+    },
+    getFormattedTime(time: Time): string {
+      return `${time.hours.toString().padStart(2, "0")} : ${time.minutes.toString().padStart(2, "0")} : ${time.seconds.toString().padStart(2, "0")}`;
+    },
+    // Funkce pro resetování timeru
+    resetTimer(): void {
+      this.elapsedTime = { hours: 0, minutes: 0, seconds: 0 };
+      this.pauseTimer();
+    },
+
     toggleLang() {
       if (this.settings.lang === 'cz' || this.settings.lang === 'CZ') this.settings.lang = 'en';
       else this.settings.lang = 'cz';
@@ -57,6 +106,7 @@ export default {
 
     },
     resetgame() {
+      this.resetTimer();
       this.settings.rounds = 0;
       this.settings.mainRounds = 1;
       this.settings.actualPoints = this.settings.playerCount;
@@ -64,6 +114,7 @@ export default {
         element.score = 0;
         element.rounds = 0;
       });
+      this.startTimer();
     },
     changeNuberOfPlayers(increase: boolean) {
       if (increase) {
@@ -207,10 +258,11 @@ export default {
         <span class="lang-switch__lang">EN
         </span>
       </div>
+
       <div class="header__inner">
         <h1>Score</h1>
         <p>by <a href="www.michalkotek.tech">MichalKotek.tech</a></p>
-
+        <p>{{ getFormattedTime(elapsedTime) }}</p>
 
       </div>
     </header>
@@ -233,6 +285,25 @@ export default {
           </template>
         </main>
       </section>
+
+
+      <section class="sidebar">
+        <h1>{{ translate.HEADING_POINTS }}</h1>
+        <p>{{ translate.POINTS_ROUND }} <strong style="font-size:17px">{{ translate.POINTS_ROUND_NO }} {{ settings.mainRounds }}</strong></p>
+        <p><strong style="font-size:19px">{{ settings.actualPoints }}</strong> {{ translate.POINTS_ASSIGN_POINTS }}</p>
+        <section class="players">
+          <template v-for="(player, index) in players" :key="index">
+            <div class="players__item players__item--points points" v-if="players[index].rounds !== settings.mainRounds">
+              <span class="points__name">{{ player.name }}</span>
+              <!-- <span class="points__text ">{{ translate.POINTS_ASSIGN_BUTTON }}: </span> -->
+              <span class="points__fake">+{{ settings.actualPoints }}</span>
+
+              <div class=" points__send" @click="assignPoints(index)">{{ translate.POINTS_ASSIGN_CONFIRM }}</div>
+            </div>
+          </template>
+        </section>
+      </section>
+
       <section class="sidebar">
         <div class="sidebar__header">
           <h1>{{ translate.HEADING_SETTINGS }}</h1>
@@ -257,19 +328,7 @@ export default {
           </div>
         </div>
       </section>
-      <section class="sidebar">
-        <h1>{{ translate.HEADING_POINTS }}</h1>
-        <p>{{ translate.POINTS_ROUND }} <strong style="font-size:17px">{{ translate.POINTS_ROUND_NO }} {{ settings.mainRounds }}</strong></p>
-        <p><strong style="font-size:19px">{{ settings.actualPoints }}</strong> {{ translate.POINTS_ASSIGN_POINTS }}</p>
-        <section class="players">
-          <template v-for="(player, index) in players" :key="index">
-            <div class="players__item players__item--points" v-if="players[index].rounds !== settings.mainRounds">
-              <label>{{ player.name }}</label>
-              <div class="button" @click="assignPoints(index)">{{ translate.POINTS_ASSIGN_BUTTON }}</div>
-            </div>
-          </template>
-        </section>
-      </section>
+
     </main>
 
   </div>
