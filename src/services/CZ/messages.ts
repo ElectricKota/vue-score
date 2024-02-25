@@ -20,7 +20,7 @@ export class MessageConstants {
     public POINTS_ROUND_NO: string = 'č.';
     public POINTS_ASSIGN_POINTS: string = 'body udělíme hráči:';
     public POINTS_ASSIGN_BUTTON: string = 'Přidělit';
-    public POINTS_ASSIGN_CONFIRM: string = 'Opravu?';
+    public POINTS_ASSIGN_CONFIRM: string = 'Opravdu?';
 
 
 }
