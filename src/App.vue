@@ -20,10 +20,10 @@ export default {
   data() {
     return {
       translate: {} as MessageConstants,
-      timerId: 0 as number | undefined,
       elapsedTime: { hours: 0, minutes: 0, seconds: 0 } as Time,
       players: new Array<Player>,
       settings: {
+        startTime: 0 as number,
         rounds: 0 as number,
         mainRounds: 1 as number,
         playerCount: 2 as number,
@@ -51,56 +51,35 @@ export default {
   },
   methods: {
     hidePlaceholderButton(event: Event) {
-      // Access the button reference
       const target = event.target as HTMLElement;
       if (target) target.classList.toggle('hide');
-      // Call your method with the item and event
-      // You can also use buttonElement.value to access the actual DOM element
-      // and perform operations like buttonElement.value.innerHTML = 'New Content';
-      // console.log('Item:', item);
       setTimeout(() => {
         target.classList.toggle('hide');
       }, 1500)
     },
+
     startTimer(): void {
-      if (this.timerId) {
-        clearTimeout(this.timerId);
+      if (this.settings.startTime === 0) {
+        this.resetTimer();
       }
-
-      this.timerId = setTimeout(() => {
-        // Zvýšení uběhlého času
-        this.elapsedTime.seconds++;
-
-        // Přesunutí do minut
-        if (this.elapsedTime.seconds === 60) {
-          this.elapsedTime.seconds = 0;
-          this.elapsedTime.minutes++;
-        }
-
-        // Přesunutí do hodin
-        if (this.elapsedTime.minutes === 60) {
-          this.elapsedTime.minutes = 0;
-          this.elapsedTime.hours++;
-        }
-
+      setTimeout(() => {
+        const elapsedTime = (Date.now() - this.settings.startTime) / 1000; // Calculate elapsed time in seconds
+        this.elapsedTime.hours = Math.floor(elapsedTime / 3600);
+        this.elapsedTime.minutes = Math.floor((elapsedTime % 3600) / 60);
+        this.elapsedTime.seconds = Math.floor(elapsedTime % 60);
         // Rekurzivní spuštění timeru
         this.startTimer();
       }, 1000); // Aktualizace každou vteřinu
-    },
-    // Funkce pro pozastavení timeru
-    pauseTimer(): void {
-      if (this.timerId) {
-        clearTimeout(this.timerId);
-        this.timerId = undefined;
-      }
     },
     getFormattedTime(time: Time): string {
       return `${time.hours.toString().padStart(2, "0")} : ${time.minutes.toString().padStart(2, "0")} : ${time.seconds.toString().padStart(2, "0")}`;
     },
     // Funkce pro resetování timeru
     resetTimer(): void {
+      console.log('reset timer!');
+
+      this.settings.startTime = Date.now();
       this.elapsedTime = { hours: 0, minutes: 0, seconds: 0 };
-      this.pauseTimer();
     },
 
     toggleLang() {
@@ -251,6 +230,9 @@ export default {
       this.settings = settingsLoaded;
       console.log('loaded Players', playersLoaded);
       console.log('loaded Settings', settingsLoaded);
+      if (isNaN(this.settings.startTime)) {
+        this.resetTimer();
+      }
 
     }
 

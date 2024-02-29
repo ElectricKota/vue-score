@@ -4,7 +4,6 @@ import { MessageConstants } from './CZ/messages'
 
 export default {
     getConstantsByLanguage(language: string): MessageConstants {
-        console.log(language);
         if (language === "cz" || language === 'CZ') {
             return new constantsCZ.MessageConstants;
         }
