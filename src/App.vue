@@ -324,6 +324,9 @@ export default {
       </section>
 
     </main>
-
+    <footer>
+      <span>By <a href="www.michalkotek.tech" target="_blank">MichalKotek.tech</a> 2024 </span>
+      <a href="https://github.com/ElectricKota/vue-score" target="_blank" title="My GitHub page"><img src="/src/assets/img/github-mark-white.svg" width="32" height="32" alt="GitHub logo"></a>
+    </footer>
   </div>
 </template>
