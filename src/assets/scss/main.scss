@@ -406,6 +406,10 @@ input {
           cursor: pointer;
           user-select: none;
           color: #fff;
+          font-size: 15px;
+          overflow: hidden;
+          overflow-wrap: break-word;
+          hyphens: auto;
 
           transition-property: visibility, opacity;
           transition-duration: 0.25s;
