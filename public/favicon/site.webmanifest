@@ -1,19 +1,43 @@
 {
-    "name": "",
-    "short_name": "",
+    "name": "Score by MichalKotek.tech",
+    "short_name": "Score",
+    "display": "fullscreen",
+    "start_url": "/",
+    "description": "Simple Score tracking app",
     "icons": [
         {
-            "src": "/assets/favicon/android-chrome-192x192.png",
+            "src": "/public/favicon/android-chrome-192x192.png",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "/assets/favicon/android-chrome-512x512.png",
+            "src": "/public/favicon/android-chrome-512x512.png",
             "sizes": "512x512",
             "type": "image/png"
+        },
+        {
+            "src": "/public/favicon/mstile-310x310.png",
+            "sizes": "310x310",
+            "type": "image/png",
+            "purpose": "maskable"
         }
     ],
-    "theme_color": "#ffffff",
-    "background_color": "#ffffff",
-    "display": "standalone"
+    "theme_color": "#1E1E1E",
+    "background_color": "#1E1E1E",
+    "orientation": "portrait-primary",  
+    "screenshots": [
+        {
+          "src": "/public/screen-mobile.jpg",
+          "type": "image/jpg",
+          "sizes": "807x387",
+          "form_factor": "narrow"
+        },
+        {
+          "src": "/public/screen-wide.jpg",
+          "type": "image/jpg",
+          "sizes": "1132x818",
+          "form_factor": "wide"
+        }
+      ]
+    
 }

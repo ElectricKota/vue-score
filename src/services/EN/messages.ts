@@ -1,7 +1,7 @@
 export class MessageConstants {
-    public HEADING_ORDER: string = 'Current Order';
+    public HEADING_ORDER: string = 'Leaderboard';
     public HEADING_SETTINGS: string = 'Settings';
-    public HEADING_POINTS: string = 'Assign Points';
+    public HEADING_POINTS: string = 'Award points';
     public HEADING_SETTINGS_PLAYERS: string = 'Players';
 
     public TABLE_ORDER: string = '#';
