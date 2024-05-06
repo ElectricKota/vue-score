@@ -257,7 +257,7 @@ export default {
       <div class="header__inner">
         <h1>Score</h1>
         <p>by <a href="www.michalkotek.tech">MichalKotek.tech</a></p>
-        <p class="time-stamp">{{ getFormattedTime(elapsedTime) }}</p>
+        <p class="time-stamp" @click="resetTimer()">{{ getFormattedTime(elapsedTime) }}</p>
 
       </div>
     </header>
