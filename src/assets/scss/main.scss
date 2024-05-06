@@ -376,7 +376,7 @@ input {
       }
 
       @include mq($from: mobile-big) {
-        grid-template-columns: 1fr 70px;
+        grid-template-columns: 1fr 83px;
         width: auto;
       }
       @include mq($from: tablet) {
