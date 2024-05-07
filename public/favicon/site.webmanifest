@@ -16,6 +16,12 @@
             "type": "image/png"
         },
         {
+            "src": "/public/favicon/mstile-144x144.png",
+            "sizes": "144x144",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
             "src": "/public/favicon/mstile-310x310.png",
             "sizes": "310x310",
             "type": "image/png",
